@@ -12,8 +12,7 @@ STAFF_LOAN_LIMIT = 5
 MAX_RENEWALS = 1
 
 
-# ---------- helpers used by other services too ----------
-
+# helpers (members and reports use these too)
 
 def loan_limit(member):
     if member["type"] == "staff":
@@ -25,7 +24,6 @@ def current_fine(loan):
     if loan["returned"] == 0:
         return fines.fine_for(loan["due_date"])
     return loan["fine"]
-
 
 def amount_owed(loan):
     if loan["returned"] == 0:
@@ -54,14 +52,18 @@ def is_overdue(loan):
     return loan["returned"] == 0 and fines.days_late(loan["due_date"]) > 0
 
 
-# ---------- loan actions ----------
 
+# loan actions
 
 def list_loans(only_overdue):
     loans = loan_repository.list_loans()
-    if only_overdue:
-        return [loan for loan in loans if is_overdue(loan)]
-    return loans
+    if not only_overdue:
+        return loans
+    result = []
+    for loan in loans:
+        if is_overdue(loan):
+            result.append(loan)
+    return result
 
 
 def get_loan(loan_id):
@@ -78,6 +80,7 @@ def create_loan(data):
     if book["available"] == 0:
         raise conflict("book is not available")
 
+    # no new loans if they owe money or are at the limit
     member_loans = loan_repository.list_loans_for_member(member["id"])
     if total_owed(member_loans) > 0:
         raise conflict("member has unpaid fines")

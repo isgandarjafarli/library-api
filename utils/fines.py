@@ -10,6 +10,5 @@ def days_late(due_date):
 def fine_for(due_date):
     return max(0, days_late(due_date)) * FINE_PER_DAY
 
-
 def money(amount):
     return round(float(amount), 2)

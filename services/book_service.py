@@ -19,6 +19,7 @@ def create_book(data):
     return book_repository.create_book(data["title"], data["author"], data["isbn"])
 
 
+
 def delete_book(book_id):
     book = get_book(book_id)
     if book["available"] == 0:

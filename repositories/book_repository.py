@@ -17,7 +17,6 @@ def get_book(book_id):
     conn.close()
     return book
 
-
 def create_book(title, author, isbn):
     conn = db.connect()
     cur = conn.execute(
